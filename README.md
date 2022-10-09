@@ -13,7 +13,7 @@ i want to reach a point in which i can at least open a github page on it.
 the UI of this thing is planned to be made nativaly with OpenGL.
 
 # Building from Source
-First, you'll need GLFW version 3.3 or higher.
+First, you'll need GLFW version 3.0 or higher.
 if you're on windows you can simply throw it in `lib/`
 
 to build it simply use `node build.js`

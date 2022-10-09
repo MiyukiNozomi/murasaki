@@ -1,5 +1,9 @@
 import std.file : readText;
 
+import helpers;
+
+import azuki_iro.window;
+
 import murasaki.io;
 import murasaki.xml;
 import murasaki.css;
@@ -75,6 +79,8 @@ void PrintOut(CSSStylesheet sheet) {
 }
 
 void main() {
+    Helpers.LoadLibraries();
+
     Document document = new Document(readText("test.ftml"));
 
     PrintOut(document.nodeTree);
@@ -83,4 +89,10 @@ void main() {
     
     for (int i = 0; i < sheets.length; i++)
         PrintOut(sheets[i]);
+
+    Window window = new Window("Murasaki Window");
+
+    window.LaunchWindow();
+
+    Helpers.Release();
 }

@@ -1,3 +1,5 @@
+const { stringify } = require("querystring");
+
 const System = function() {
     return {
         out: {
@@ -20,12 +22,25 @@ const program = function() {
                 childprocess: require("child_process")
             }
         },
+        
+        filesToCompile : "",
+
+        listFiles : function(folder) {
+            let files = imports.fs.readdirSync(folder);
+            files.forEach(elm => {
+                let fl = folder + "/" + elm;
+                if (imports.fs.statSync(fl).isDirectory()) {
+                    this.listFiles(fl);
+                } else {
+                    this.filesToCompile += fl + " ";
+                }
+            });
+        },
 
         main : async function() {
             let runProgram = process.argv.includes("run");
 
             System.out.println("Building...");
-            let files = imports.fs.readdirSync("./src/");
             
             let line = "ldc2";
             process.argv.forEach((elm) =>{ 
@@ -35,24 +50,11 @@ const program = function() {
                 }
             });
             System.out.println("Using compiler: " + line);
-            System.out.print("Building Files: ");
 
-            for (let i = 0; i < files.length; i++) {
-                let elm = files[i];
-                if (imports.fs.statSync("./src/" + elm).isDirectory()) {
-                    let newFiles = imports.fs.readdirSync("./src/" + elm).filter(function(v, i, ar) {
-                        return v.includes(".d");
-                    });
-                    newFiles.forEach(function(e) {
-                        System.out.print(e + " ");
-                        line += " src/" + elm+ "/"+ e;
-                    });
-                } else {
-                    System.out.print(elm+  " ");
-                    line += " src/" + elm;
-                }
-            }
-            System.out.println("");
+            this.listFiles("lib/vendor");
+            this.listFiles("src");
+
+            line += " " + this.filesToCompile;
 
             line += " -od=bin";
             if (process.platform == "win32") {
@@ -66,7 +68,7 @@ const program = function() {
                     System.out.println(err);
                     System.out.println("##########  Build Failed!!!  ##########");
                 } else {
-                    System.out.println(" BUILD SUCCESS ######");
+                    System.out.println("########## BUILD SUCCESS #########");
                 }
             });
 
