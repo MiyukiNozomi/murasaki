@@ -1,0 +1,9 @@
+<html lang="cu">
+    <body>
+        <a href="urmom" download id="fds">suportar texto</a>
+
+        <script>
+            document.getElementById("fds").innerText = "fds";
+        </script>
+    </body>
+</html>
