@@ -28,6 +28,14 @@ const program = function() {
             let files = imports.fs.readdirSync("./src/");
             
             let line = "ldc2";
+            process.argv.forEach((elm) =>{ 
+                if (elm.startsWith("/use:")) {
+                    let cc = elm.substring(5, elm.length);
+                    line = cc;
+                }
+            });
+            System.out.println("Using compiler: " + line);
+            System.out.print("Building Files: ");
 
             for (let i = 0; i < files.length; i++) {
                 let elm = files[i];
@@ -36,14 +44,15 @@ const program = function() {
                         return v.includes(".d");
                     });
                     newFiles.forEach(function(e) {
-                        System.out.println(e);
+                        System.out.print(e + " ");
                         line += " src/" + elm+ "/"+ e;
                     });
                 } else {
-                    System.out.println(elm);
+                    System.out.print(elm+  " ");
                     line += " src/" + elm;
                 }
             }
+            System.out.println("");
 
             line += " -od=bin";
             if (process.platform == "win32") {
@@ -52,8 +61,13 @@ const program = function() {
                 line += " -of=murasaki-linux";
             }
             imports.childprocess.exec(line, function(err) {
-                if (err != null)
+                if (err != null) {
+                    System.out.println("##########  Build Failed!!!  ##########");
                     System.out.println(err);
+                    System.out.println("##########  Build Failed!!!  ##########");
+                } else {
+                    System.out.println(" BUILD SUCCESS ######");
+                }
             });
 
             if (runProgram) {
