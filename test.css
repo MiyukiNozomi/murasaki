@@ -1,11 +1,11 @@
 body {
-    background-color: white;
+    background-color: rgb(125, 125, 0.5);
 }
 
-.content, h2 { 
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+html {
+    margin: 0;
 }
 
-#idtag {
-    align-items: center;
+.urmom {
+    color: white;
 }

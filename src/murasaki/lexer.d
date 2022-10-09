@@ -2,6 +2,12 @@ module murasaki.lexer;
 
 import std.ascii;
 
+public enum LexerMode {
+    CSS,
+    JavaScript,
+    HTML,
+}
+
 public enum TokenType {
     Invalid,
 
@@ -44,15 +50,9 @@ public enum TokenType {
     LeftBrace,
     RightBrace,
 
-    // Keywords
-    KeywordTrue,
-    KeywordFalse,
-    KeywordNull,
-    KeywordAssert,
-    KeywordWhile,
-    KeywordFor,
-    KeywordIf,
-    KeywordElse,
+    // CSS Keywords
+    KeywordRGBA,
+    KeywordRGB,
 
     KeywordPrint,
     // Symbols
@@ -74,12 +74,14 @@ public class Lexer {
     public int position, currentLine;
 
     public char current;
+    public LexerMode mode;
 
-    public this(string content) {
+    public this(string content, LexerMode mode = LexerMode.HTML) {
         this.content = content;
         this.position = 0;
         this.currentLine = 1;
         this.Next();
+        this.mode = mode;
     }
 
     public char Next() {
@@ -128,7 +130,7 @@ public class Lexer {
                 identifier ~= Next();
             }
 
-            return Token(TypeForString(identifier), currentLine, identifier);
+            return Token(TypeForString(this.mode, identifier), currentLine, identifier);
         }
 
         if (current == '"') {
@@ -205,7 +207,14 @@ template DoubleSymbolMatch(char symbol, char additional, string singleType, stri
 
 
 // Identify the types of words.
-auto TypeForString(string identifier) {
+auto TypeForString(LexerMode mode, string identifier) {
+    if (mode == LexerMode.CSS) {
+        if (identifier == "rgba") {
+            return TokenType.KeywordRGBA;
+        } else if (identifier == "rgb") {
+            return TokenType.KeywordRGB;
+        }
+    }
     return TokenType.Identifier;
 }
 

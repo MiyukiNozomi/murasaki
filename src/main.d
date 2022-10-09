@@ -48,11 +48,39 @@ void PrintOut(StyleNode node) {
     Printf("}\n");
 }
 
+void PrintOut(CSSStylesheet sheet) {
+    Printf("%s => [\n", sheet.href);
+
+    foreach(ruleK ; sheet.rules.byKey) {
+        auto rule = sheet.rules[ruleK];
+        Printf("\t%s:%s ->", ruleK,rule.type);
+        switch(rule.type) {
+            case CSSPropertyValueType.Color: {
+                float[4] c = rule.value.color;
+                Printf("RGBA(%f, %f, %f, %f)", c[0], c[1], c[2], c[3]);
+                break;
+            }
+            case CSSPropertyValueType.Number: {
+                Printf("%f", rule.value.number);
+                break;
+            }
+            default:
+                Printf("%s", rule.value.text);
+                break;
+        }
+        Printf(" IsImportant:%s\n", rule.important);
+    }
+
+    Printf("]\n");
+}
+
 void main() {
     Document document = new Document(readText("test.ftml"));
-    StyleNode[] nodes = new StylesheetParser(readText("test.css")).Parse();
+
     PrintOut(document.nodeTree);
-    for (int i = 0; i < nodes.length; i++) {
-        PrintOut(nodes[i]);
-    }
+
+    CSSStylesheet[] sheets = new StylesheetProcessor(readText("test.css")).Generate();
+    
+    for (int i = 0; i < sheets.length; i++)
+        PrintOut(sheets[i]);
 }

@@ -9,8 +9,8 @@ public class Parser {
 
     public bool hadErrors = false;
 
-    public this(string source) {
-        this.lexer = new Lexer(source);
+    public this(string source, LexerMode mode = LexerMode.HTML) {
+        this.lexer = new Lexer(source, mode);
         this.Next();
     }
 

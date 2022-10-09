@@ -46,6 +46,11 @@ const program = function() {
             }
 
             line += " -od=bin";
+            if (process.platform == "win32") {
+                line += " -of=murasaki-win32.exe";
+            } else {
+                line += " -of=murasaki-linux";
+            }
             imports.childprocess.exec(line, function(err) {
                 if (err != null)
                     System.out.println(err);
