@@ -12,3 +12,7 @@ auto Format(Char, Args...)(in Char[] fmt, Args args) {
 void Printf(Char, Args...)(in Char[] fmt, Args args) {
     printf(format(fmt, args).toStringz());
 }
+
+void Printfln(Char, Args...)(in Char[] fmt, Args args) {
+    printf((format(fmt, args)~"\n").toStringz());
+}

@@ -1,0 +1,17 @@
+<html lang="cu">
+    <head>
+    </head>
+    <body>
+        <h2>Hiragi Miyuki's Web Engine!</h2>
+        <p>This page should render correctly (i hope so.)</p>
+        <p id="ver">by the way, we're running Murasaki version </p>
+        <script>
+            var elm = document.getElementById("ver");
+            // false if browser isn't murasaki
+            if (window.murasaki != undefined)
+                elm.innerText += window.murasaki.version;
+            else
+                elm.innerText = "You're not running Murasaki!";
+        </script>
+    </body>
+</html>

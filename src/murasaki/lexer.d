@@ -54,6 +54,11 @@ public enum TokenType {
     KeywordRGBA,
     KeywordRGB,
 
+    // JS Keyword
+    KeywordVar,
+    KeywordConst,
+    KeywordFunction,
+
     KeywordPrint,
     // Symbols
     Semicolon,
@@ -213,6 +218,16 @@ auto TypeForString(LexerMode mode, string identifier) {
             return TokenType.KeywordRGBA;
         } else if (identifier == "rgb") {
             return TokenType.KeywordRGB;
+        }
+    } else if (mode == LexerMode.JavaScript) {
+        if (identifier == "var") {
+            return TokenType.KeywordVar;
+        }
+        if (identifier == "function") {
+            return TokenType.KeywordFunction;
+        }
+        if (identifier == "const") {
+            return TokenType.KeywordConst;
         }
     }
     return TokenType.Identifier;

@@ -1,5 +1,8 @@
 module murasaki.html;
 
+import azuki_iro.font;
+import azuki_iro.math.linalg;
+
 import murasaki.io;
 import murasaki.xml;
 import murasaki.css;
@@ -17,21 +20,31 @@ public class HTMLElement {
     public HTMLElement[] children;
     public CSSStylesheet style;
 
-    public string innerText;
+    public Text2D innerText;
+
+    public this() {
+        this.style = new CSSStylesheet();
+        CSSValue defaultFontSize = CSSValue();
+        defaultFontSize.number = 12;
+        
+        CSSProperty property = new CSSProperty();
+        property.parentStylesheet = this.style;
+        property.value = defaultFontSize;
+        property.type = CSSPropertyValueType.Number;
+        this.style.rules["font-size"] = property;
+        innerText = new Text2D(0, 0, "", Font.loadedFonts["YaheiUI"], float3(0,0,0), 0.10);
+    }
 
     /**same thing as inner text, only difference is that it re-invokes the XMLParser
     when assigned.*/
     public void innerHTML(string v) {
         //TODO revoke parser
-        this.innerHTML = v;
     }  
-    public string innerHTML(){return innerText;}
+    public string innerHTML(){return innerText.text;}
 }
 
 public class HTMLBodyElement : HTMLElement {
     public this() {
-        this.style = new CSSStylesheet();
-
         // body { margin; 12px; }
         CSSValue defaultMargin = CSSValue();
         defaultMargin.number = 12;
@@ -59,12 +72,25 @@ public class HTMLParser {
         return ParseNode(null, rootNode);
     }
 
+    public HTMLElement ElementFactory(string tagname) {
+        HTMLElement elm;
+        switch(tagname) {
+            case "body":
+                elm = new HTMLBodyElement();
+                break;
+            default:
+                elm = new HTMLElement();
+                break;
+        }
+        elm.tagname = tagname;
+        return elm;
+    }
+
     public HTMLElement ParseNode(HTMLElement parent, Node n) {
-        HTMLElement elm = new HTMLElement();
+        HTMLElement elm = ElementFactory(n.tagname);
         elm.parent = parent;
 
-        elm.tagname = n.tagname;
-        elm.innerText = TokenArrayToText(n.innerText);
+        elm.innerText.text = TokenArrayToText(n.innerText);
 
         foreach(Attribute attr ; n.attributes) {
             elm.attributes[attr.name.data] = attr.value;
@@ -80,7 +106,7 @@ public class HTMLParser {
         string f = "";
         
         foreach(Token d ; a) {
-            f ~= d.data;
+            f ~= d.data ~ " ";
         }
 
         return f;

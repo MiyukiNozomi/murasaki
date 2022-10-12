@@ -43,13 +43,33 @@ const program = function() {
             System.out.println("Building...");
             
             let line = "ldc2";
+            let isDebug = false;
             process.argv.forEach((elm) =>{ 
                 if (elm.startsWith("/use:")) {
                     let cc = elm.substring(5, elm.length);
                     line = cc;
                 }
+                if (elm == "/debug") {
+                    isDebug = true;
+                }
             });
             System.out.println("Using compiler: " + line);
+            if (isDebug) {
+                System.out.println("Debug Mode!");
+            }
+            
+            // for DMD
+            if (line == "dmd") {
+                if (isDebug)
+                    line += " -debug";
+                line += " -version=GL_33";
+            }
+            // for LDC2
+            else if (line == "ldc2") {
+                if (isDebug)
+                    line += " -d-debug -g";
+                line += " --d-version=GL_33";
+            }
 
             this.listFiles("lib/vendor");
             this.listFiles("src");

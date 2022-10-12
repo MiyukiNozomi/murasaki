@@ -2,11 +2,15 @@ import std.file : readText;
 
 import helpers;
 
+import azuki_iro.font;
+import azuki_iro.shader;
 import azuki_iro.window;
+import azuki_iro.shaders.font;
 
 import murasaki.io;
 import murasaki.xml;
 import murasaki.css;
+import murasaki.html;
 import murasaki.lexer;
 
 void PrintOut(Node node, string indent =  "") {
@@ -78,21 +82,51 @@ void PrintOut(CSSStylesheet sheet) {
     Printf("]\n");
 }
 
+void PrintOut(HTMLElement node, string indent = "") {
+    if (node.tagname == "") {
+        Printfln("%s%s",indent, node.innerText.text);
+    } else {
+        Printf("%s[%s",indent, node.tagname);
+        foreach (string attr ; node.attributes.byKey()) {
+            Printf(" %s=%s", attr, node.attributes[attr].data);
+        }
+        Printfln("]");
+
+        foreach(HTMLElement ndr ; node.children) {
+            PrintOut(ndr, indent~" ");
+        }
+
+        Printfln("[/%s]", node.tagname);
+    }
+}
+
 void main() {
+
     Helpers.LoadLibraries();
-
-    Document document = new Document(readText("test.ftml"));
-
-    PrintOut(document.nodeTree);
-
+/*
     CSSStylesheet[] sheets = new StylesheetProcessor(readText("test.css")).Generate();
     
     for (int i = 0; i < sheets.length; i++)
-        PrintOut(sheets[i]);
+        PrintOut(sheets[i]);*/
 
     Window window = new Window("Murasaki Window");
 
+    Font.Init();
+    
+    Shader.AddShader(new FontShader());
+    HTMLParser parser = new HTMLParser(readText("test.html"));
+    Printfln("Printing out parsed HTML");
+    PrintOut(parser.rootNode);
+    
+    HTMLElement tree = parser.Parse();
+    window.renderer.tree = tree;
+
+    Printfln("Printing out HTMLTree");
+    PrintOut(tree);
+
     window.LaunchWindow();
 
+    
+    Font.Release();
     Helpers.Release();
 }
